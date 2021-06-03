@@ -1,10 +1,10 @@
 use crate::Watch;
-use linkerd_stack::layer;
 use std::{
     future::Future,
     pin::Pin,
     task::{Context, Poll},
 };
+use tower::layer::{layer_fn, Layer};
 
 /// Holds a drain::Watch for as long as a request is pending.
 #[derive(Clone, Debug)]
@@ -20,8 +20,8 @@ impl<S> Retain<S> {
         Self { drain, inner }
     }
 
-    pub fn layer(drain: Watch) -> impl layer::Layer<S, Service = Self> + Clone {
-        layer::mk(move |inner| Self::new(drain.clone(), inner))
+    pub fn layer(drain: Watch) -> impl Layer<S, Service = Self> + Clone {
+        layer_fn(move |inner| Self::new(drain.clone(), inner))
     }
 }
 
@@ -34,16 +34,15 @@ where
     type Error = S::Error;
     type Future = Pin<Box<dyn Future<Output = Result<S::Response, S::Error>> + Send + 'static>>;
 
+    #[inline]
     fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.inner.poll_ready(cx)
     }
 
+    #[inline]
     fn call(&mut self, req: Req) -> Self::Future {
-        Box::pin(
-            self.drain
-                .clone()
-                .ignore_signaled()
-                .release_after(self.inner.call(req)),
-        )
+        let call = self.inner.call(req);
+        let drain = self.drain.clone();
+        Box::pin(drain.ignore_signaled().release_after(call))
     }
 }
