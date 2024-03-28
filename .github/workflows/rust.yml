@@ -15,7 +15,7 @@ jobs:
       contents: read
     steps:
     - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
-    - uses: EmbarkStudios/cargo-deny-action@b655a95dbfd6f1dacd48f7e869cb37cf4f03a6d9
+    - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393
       with:
         command: check bans licenses sources
 
@@ -27,7 +27,7 @@ jobs:
       contents: read
     steps:
     - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
-    - uses: EmbarkStudios/cargo-deny-action@b655a95dbfd6f1dacd48f7e869cb37cf4f03a6d9
+    - uses: EmbarkStudios/cargo-deny-action@b01e7a8cfb1f496c52d77361e84c1840d8246393
       with:
         command: check advisories
 
