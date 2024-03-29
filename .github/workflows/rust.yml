@@ -1,7 +1,19 @@
 name: Rust PR
 
-on:
-  pull_request: {}
+on: pull_request
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_NET_RETRY: 10
+  RUSTFLAGS: "-D warnings -A deprecated"
+  RUSTUP_MAX_RETRIES: 10
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
 
@@ -11,58 +23,39 @@ jobs:
   audit:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
     - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
     - uses: EmbarkStudios/cargo-deny-action@b655a95dbfd6f1dacd48f7e869cb37cf4f03a6d9
       with:
         command: check bans licenses sources
 
-  # Prevent sudden announcement of a new advisory from failing Ci.
-  advisories:
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-    - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
-    - uses: EmbarkStudios/cargo-deny-action@b655a95dbfd6f1dacd48f7e869cb37cf4f03a6d9
-      with:
-        command: check advisories
-
   # Linting
   clippy:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    container:
-      image: docker://rust:1.52.1-buster
-    permissions:
-      contents: read
+    container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
-      - run: rustup component add clippy
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
+      - run: cargo fetch
       - run: cargo clippy --all-targets
 
   # Enforce automated formatting.
   fmt:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    container:
-      image: docker://rust:1.52.1-buster
-    permissions:
-      contents: read
+    container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
-      - run: rustup component add rustfmt
       - run: cargo fmt -- --check
 
   # Run all tests.
   test:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
       - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b
+      - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
+      - run: cargo fetch
       - run: cargo test
