@@ -31,7 +31,6 @@ pub fn channel() -> (Signal, Watch) {
 enum Never {}
 
 /// Send a drain command to all watchers.
-#[derive(Debug)]
 pub struct Signal {
     drained_rx: mpsc::Receiver<Never>,
     signal_tx: watch::Sender<()>,
@@ -41,14 +40,14 @@ pub struct Signal {
 ///
 /// All `Watch` instances must be dropped for a `Signal::signal` call to
 /// complete.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Watch {
     drained_tx: mpsc::Sender<Never>,
     signal_rx: watch::Receiver<()>,
 }
 
 #[must_use = "ReleaseShutdown should be dropped explicitly to release the runtime"]
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct ReleaseShutdown(mpsc::Sender<Never>);
 
 // === impl Signal ===
@@ -71,6 +70,12 @@ impl Signal {
             None => {}
             Some(n) => match n {},
         }
+    }
+}
+
+impl std::fmt::Debug for Signal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Signal").finish_non_exhaustive()
     }
 }
 
@@ -117,12 +122,23 @@ impl Watch {
     }
 }
 
+impl std::fmt::Debug for Watch {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Watch").finish_non_exhaustive()
+    }
+}
+
 impl ReleaseShutdown {
     /// Releases shutdown after `future` completes.
     pub async fn release_after<F: Future>(self, future: F) -> F::Output {
         let res = future.await;
         drop(self.0);
         res
+    }
+}
+impl std::fmt::Debug for ReleaseShutdown {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ReleaseShutdown").finish_non_exhaustive()
     }
 }
 
