@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+    - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f
     - uses: EmbarkStudios/cargo-deny-action@b655a95dbfd6f1dacd48f7e869cb37cf4f03a6d9
       with:
         command: check bans licenses sources
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
       - run: cargo fetch
       - run: cargo clippy --all-targets
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f
       - run: cargo fmt -- --check
 
   # Run all tests.
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     container: docker://ghcr.io/linkerd/dev:v43-rust
     steps:
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
       - run: cargo fetch
       - run: cargo test
