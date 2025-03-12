@@ -4,7 +4,8 @@ use std::{
     pin::Pin,
     task::{Context, Poll},
 };
-use tower::layer::{layer_fn, Layer};
+use tower_layer::{layer_fn, Layer};
+use tower_service::Service;
 
 /// Holds a drain::Watch for as long as a request is pending.
 #[derive(Clone, Debug)]
@@ -25,9 +26,9 @@ impl<S> Retain<S> {
     }
 }
 
-impl<Req, S> tower::Service<Req> for Retain<S>
+impl<Req, S> Service<Req> for Retain<S>
 where
-    S: tower::Service<Req>,
+    S: Service<Req>,
     S::Future: Send + 'static,
 {
     type Response = S::Response;
