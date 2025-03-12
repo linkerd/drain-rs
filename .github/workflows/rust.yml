@@ -16,21 +16,7 @@ permissions:
   contents: read
 
 jobs:
-
-  ## Required builds
-
-  # Ensures we don't take unintended dependencies.
-  audit:
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-    - uses: EmbarkStudios/cargo-deny-action@34899fc7ba81ca6268d5947a7a16b4649013fea1
-      with:
-        command: check bans licenses sources
-
-  # Linting
-  clippy:
+  check:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     container: docker://ghcr.io/linkerd/dev:v45-rust
@@ -38,24 +24,10 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3
       - run: cargo fetch
-      - run: cargo clippy --all-targets
-
-  # Enforce automated formatting.
-  fmt:
-    timeout-minutes: 5
-    runs-on: ubuntu-latest
-    container: docker://ghcr.io/linkerd/dev:v45-rust
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - run: cargo fmt -- --check
-
-  # Run all tests.
-  test:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    container: docker://ghcr.io/linkerd/dev:v45-rust
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-      - uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3
-      - run: cargo fetch
-      - run: cargo test
+      - run: cargo deny --all-features check bans licenses sources
+      - run: cargo deny --all-features check advisories
+        continue-on-error: true
+      - run: cargo clippy --all-targets --all-features --locked
+      - run: cargo nextest run --no-run
+      - run: cargo nextest run
