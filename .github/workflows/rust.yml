@@ -33,7 +33,7 @@ jobs:
   clippy:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    container: docker://ghcr.io/linkerd/dev:v43-rust
+    container: docker://ghcr.io/linkerd/dev:v45-rust
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3
@@ -44,7 +44,7 @@ jobs:
   fmt:
     timeout-minutes: 5
     runs-on: ubuntu-latest
-    container: docker://ghcr.io/linkerd/dev:v43-rust
+    container: docker://ghcr.io/linkerd/dev:v45-rust
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - run: cargo fmt -- --check
@@ -53,7 +53,7 @@ jobs:
   test:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    container: docker://ghcr.io/linkerd/dev:v43-rust
+    container: docker://ghcr.io/linkerd/dev:v45-rust
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: Swatinem/rust-cache@f0deed1e0edfc6a9be95417288c0e1099b1eeec3
