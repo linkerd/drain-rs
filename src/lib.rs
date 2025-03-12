@@ -1,10 +1,10 @@
 #![deny(warnings, rust_2018_idioms)]
 #![forbid(unsafe_code)]
 
-#[cfg(feature = "tower")]
+#[cfg(feature = "retain")]
 mod retain;
 
-#[cfg(feature = "tower")]
+#[cfg(feature = "retain")]
 pub use crate::retain::Retain;
 use std::future::Future;
 use tokio::sync::{mpsc, watch};

@@ -1,6 +1,6 @@
 [package]
 name = "drain"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Linkerd Developers <cncf-linkerd-dev@lists.cncf.io>"]
 license = "Apache-2.0"
 edition = "2018"
@@ -11,7 +11,8 @@ A crate that supports graceful shutdown
 """
 
 [features]
-retain = ["tower"]
+default = []
+retain = ["dep:tower"]
 
 [dependencies]
 tokio = { version = "1", features = ["macros", "sync"] }
